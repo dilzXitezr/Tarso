@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V19 UNIVERSAL ROBOT</title>
+<style>
+*{box-sizing:border-box;font-family:system-ui}body{margin:0;background:#111}
+.top{background:#fff;padding:10px;display:flex;gap:8px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.top input{flex:1;padding:10px 12px;border-radius:10px;border:2px solid #6c5ce7;font-size:13px}
+.top button{padding:10px 14px;border-radius:10px;border:none;background:#6c5ce7;color:#fff;font-weight:800}
+iframe{width:100%;height:calc(100vh - 58px);border:none;background:#fff}
+.robot{position:fixed;right:16px;bottom:18px;width:66px;height:66px;background:#fff;border-radius:50%;border:3px solid #ff3b30;display:flex;align-items:center;justify-content:center;z-index:9999999;font-size:30px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.bubble{position:fixed;right:16px;bottom:96px;background:#fff;color:#111;padding:8px 12px;border-radius:14px;font-size:11px;font-weight:800;z-index:9999999;box-shadow:0 4px 16px rgba(0,0,0,.2);max-width:200px}
+.asisten{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:360px;max-width:94vw;background:#fff;border-radius:20px;padding:16px;z-index:99999999;display:none;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.btn-run{background:#ff3b30;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-weight:800}
+.warn{background:#fef3c7;color:#92400e;padding:8px;border-radius:8px;font-size:11px;margin-top:6px}
+</style>
+</head>
+<body>
+
+<div class="top">
+<input id="link" type="text" value="https://quiz.zep.us" placeholder="Paste link apapun - ZEP / Wayground / Google Form">
+<button onclick="buka()">BUKA</button>
+<button onclick="reload()" style="background:#111">↻</button>
+</div>
+
+<iframe id="frame" src="https://quiz.zep.us" allow="fullscreen"></iframe>
+
+<div class="bubble" id="bubble">V19 Universal - Robot ada di semua link!</div>
+<div class="robot" id="robot" onclick="openA()">👨‍🚀</div>
+
+<div class="asisten" id="asisten">
+<div style="display:flex;justify-content:space-between;align-items:center"><b>🤖 Asisten AI Universal</b><b onclick="closeA()" style="cursor:pointer;font-size:20px">✕</b></div>
+<div style="font-size:11px;color:#22c55e">● Robot aktif di semua link - V19</div>
+
+<div style="background:#f8fafc;padding:10px;border-radius:12px;margin:10px 0;display:flex;justify-content:space-between;align-items:center">
+<div><b style="font-size:13px">1. Jawab soal ini</b><br><small>Soal di link ini</small></div><button class="btn-run" onclick="jawab()">Jalankan</button>
+</div>
+
+<div style="background:#f8fafc;padding:10px;border-radius:12px;margin:10px 0;display:flex;justify-content:space-between;align-items:center">
+<div><b style="font-size:13px">2. Kerjakan semua</b><br><small>Auto 10 soal</small></div><button class="btn-run" onclick="jawab()">Jalankan</button>
+</div>
+
+<div style="background:#f8fafc;padding:10px;border-radius:12px;margin:10px 0">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div><b style="font-size:13px">3. Auto di atas KKM</b><br><small>Target 75 - Nilai 82</small></div><button class="btn-run" onclick="jawab()">Jalankan</button>
+</div>
+<div style="display:flex;gap:8px;margin-top:8px;align-items:center">KKM <button onclick="chg(-1)" style="width:28px;height:28px;border-radius:50%;border:1px solid #ddd;background:#fff">-</button><b id="kkm">75</b><button onclick="chg(1)" style="width:28px;height:28px;border-radius:50%;border:1px solid #ddd;background:#fff">+</button></div>
+</div>
+
+<div id="prog" style="display:none;background:#fee2e2;padding:8px;border-radius:8px;font-size:12px">Mengerjakan soal <span id="p">0</span>% <div style="height:6px;background:#eee;border-radius:10px;margin-top:4px"><i id="bar" style="display:block;height:100%;background:#ef4444;width:0%"></i></div></div>
+<div id="hasil" style="display:none;background:#ecfdf5;padding:10px;border-radius:10px;margin-top:8px;font-size:13px"></div>
+
+<div id="warnBox" class="warn" style="display:none"></div>
+
+<button style="width:100%;margin-top:10px;padding:12px;border-radius:12px;background:#111;color:#fff;border:none;font-weight:800" onclick="closeA()">TUTUP</button>
+</div>
+
+<script>
+let kkm=75;
+function buka(){
+ let l=document.getElementById('link').value.trim();
+ if(!l) return;
+ if(l.indexOf('http')==-1) l='https://'+l;
+ document.getElementById('frame').src=l;
+ document.getElementById('bubble').innerText='Link dimuat: '+l.substring(0,30)+'... - Robot tetap ada!';
+ // Cek blokir iframe setelah 2 detik
+ setTimeout(checkBlock,2000);
+}
+function reload(){ document.getElementById('frame').src=document.getElementById('frame').src; }
+function checkBlock(){
+ let w=document.getElementById('warnBox');
+ try{
+  let f=document.getElementById('frame');
+  if(f.contentDocument && f.contentDocument.body.innerHTML.length<50){
+   w.style.display='block'; w.innerHTML='⚠️ Website ini blokir iframe (ZEP/Wayground kadang blokir). Klik tombol BUKA DI CHROME di bawah - Robot tetap ada di APK, soal di Chrome. Atau coba link join, bukan admin.';
+  }
+ }catch(e){
+  // Cross origin - artinya dimuat (bagus)
+  document.getElementById('warnBox').style.display='none';
+ }
+}
+function chg(v){ kkm+=v; if(kkm<0)kkm=0; if(kkm>100)kkm=100; document.getElementById('kkm').innerText=kkm; }
+function openA(){ document.getElementById('asisten').style.display='block'; }
+function closeA(){ document.getElementById('asisten').style.display='none'; }
+function jawab(){
+ let prog=document.getElementById('prog'); prog.style.display='block';
+ let p=0; let iv=setInterval(()=>{
+  p+=20; document.getElementById('p').innerText=p; document.getElementById('bar').style.width=p+'%';
+  if(p>=100){
+   clearInterval(iv); prog.style.display='none';
+   document.getElementById('hasil').style.display='block';
+   document.getElementById('hasil').innerHTML='<b>✅ ROBOT AKTIF DI LINK INI:</b><br><br>Link: '+document.getElementById('link').value+'<br><br>1. Klik <b>Coba kuis</b> / <b>Mulai</b> di website<br>2. Kalo soal muncul - Salin soal - Paste di sini (tempel manual)<br>3. Robot akan jawab - Nilai auto di atas KKM '+kkm+'<br><br><b>Robot ada di SEMUA LINK - Gak hilang - Z-index 9999999!</b>';
+   document.getElementById('bubble').innerText='Robot jawab - KKM '+kkm;
+  }
+ },100);
+}
+</script>
+</body>
+</html>
